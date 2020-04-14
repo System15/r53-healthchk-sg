@@ -13,8 +13,10 @@ defined using the PORT variable.
 **Usage:**
 
 ```
-r53-healthchk-sg.sh -n <profile_name> -r <region> -v <vpc-id> [ -g <group-name> ] [ -p <port> ]
+r53-healthchk-sg.sh -n <profile_name> -r <region> -v <vpc-id> [ -g <group-name> ] [ -p <port> ] [ -c ]
 ```
+
+The `-c` option runs in a mode optimised for the Windows AWS CLI interacting with Cygwin
 
 **Output:**
 

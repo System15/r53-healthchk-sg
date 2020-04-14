@@ -10,7 +10,7 @@
 usage ()
 {
   echo " Build a Route 53 Health Check security group in your VPC."
-  echo " >> Usage: $0 -n <profile_name> -r <region> [ -p <port> ]"
+  echo " >> Usage: $0 -n <profile_name> -r <region> [ -p <port> ] [ -c ]"
   echo " Note: default_port=80"
   exit 1
 }
@@ -23,7 +23,9 @@ check ()
   fi
 }
 
-while getopts "g:n:p:r:v:h" opt; do
+PERMTMP=/tmp/ippermissions.$$;
+
+while getopts "g:n:p:r:v:hc" opt; do
   case $opt in
     g)
       NAME=$OPTARG
@@ -39,6 +41,9 @@ while getopts "g:n:p:r:v:h" opt; do
       ;;
     v)
       VPCID=$OPTARG
+      ;;
+    c)
+      PERMTMP=`cygpath -m $PERMTMP`
       ;;
     [h?])
       usage
@@ -130,7 +135,7 @@ fi
 # Populate the security group
 #
 echo "$(get_ip_permissions $PORT)" > /tmp/ippermissions.$$
-populated=`aws ec2 authorize-security-group-ingress --group-id $SGId --profile $PROFILE --region $REGION --ip-permissions file:///tmp/ippermissions.$$`
+populated=`aws ec2 authorize-security-group-ingress --group-id $SGId --profile $PROFILE --region $REGION --ip-permissions file://$PERMTMP`
 echo -n "."
 
 # Tag it
@@ -145,6 +150,6 @@ echo "Security group Id: $SGId"
 # Clean up
 #
 rm -f /tmp/sg-id.$$
-rm -f /tmp/ippermissions.$$
+#rm -f /tmp/ippermissions.$$
 
 exit 0
